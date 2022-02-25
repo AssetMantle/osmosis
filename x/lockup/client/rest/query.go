@@ -96,7 +96,12 @@ func queryAccountLockedCoinsFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/lockup/%s", types.QueryAccountLockedCoins), bz)
+		ctx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, clientCtx, r)
+		if !ok {
+			return
+		}
+
+		res, _, err := ctx.QueryWithData(fmt.Sprintf("custom/lockup/%s", types.QueryAccountLockedCoins), bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -105,7 +110,7 @@ func queryAccountLockedCoinsFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		rest.PostProcessResponse(w, clientCtx, res)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
 
